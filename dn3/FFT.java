@@ -1,4 +1,6 @@
 package dn3;
+import dn3.Complex;
+
 import java.util.Arrays;
 
 public class FFT {
@@ -8,24 +10,24 @@ public class FFT {
 	 * @param jeInverzno
 	 * @return
 	 */
-	public static dn3.Complex[] fft(dn3.Complex[] a, boolean jeInverzno) {
+	public static Complex[] fft(Complex[] a, boolean jeInverzno) {
 		int n = a.length;
 		if (n == 1) {
 			return a;
 		} else {
-			dn3.Complex[] sodi = new dn3.Complex[n / 2];
-			dn3.Complex[] lihi = new dn3.Complex[n / 2];
+			Complex[] sodi = new Complex[n / 2];
+			Complex[] lihi = new Complex[n / 2];
 			for (int i = 0; 2 * i < n; i++) {
 				sodi[i] = a[2*i];
 				lihi[i] = a[2*i+1];
 			}
-			dn3.Complex[] sodiFFT = fft(sodi, jeInverzno);
-			dn3.Complex[] lihiFFT = fft(lihi, jeInverzno);
-			dn3.Complex w = new dn3.Complex(1.0);
+			Complex[] sodiFFT = fft(sodi, jeInverzno);
+			Complex[] lihiFFT = fft(lihi, jeInverzno);
+			Complex w = new Complex(1.0);
 			double alfa = 2 * Math.PI / n * (jeInverzno ? -1 : 1);
-			dn3.Complex w0 = new dn3.Complex(Math.cos(alfa), Math.sin(alfa));
+			Complex w0 = new Complex(Math.cos(alfa), Math.sin(alfa));
 			for (int i = 0; 2 * i < n; i++) {
-				dn3.Complex c = w.times(lihiFFT[i]);
+				Complex c = w.times(lihiFFT[i]);
 				a[i] = sodiFFT[i].plus(c);
 				a[i + n/2] = sodiFFT[i].minus(c);
 				if (jeInverzno) {
@@ -45,22 +47,22 @@ public class FFT {
 		while (n <= stA + stB) {
 			n *= 2;
 		}
-		dn3.Complex[] aC = new dn3.Complex[n];
-		dn3.Complex[] bC = new dn3.Complex[n];
+		Complex[] aC = new Complex[n];
+		Complex[] bC = new Complex[n];
 		for (int i = 0; i < n; i++) {
-			aC[i] = i <= stA ? new dn3.Complex(a[i]) : new dn3.Complex(0.0);
-			bC[i] = i <= stB ? new dn3.Complex(b[i]) : new dn3.Complex(0.0);
+			aC[i] = i <= stA ? new Complex(a[i]) : new Complex(0.0);
+			bC[i] = i <= stB ? new Complex(b[i]) : new Complex(0.0);
 		}
 		// transformiraj
-		dn3.Complex[] aFFT = FFT.fft(aC, false);
-		dn3.Complex[] bFFT = FFT.fft(bC, false);
+		Complex[] aFFT = FFT.fft(aC, false);
+		Complex[] bFFT = FFT.fft(bC, false);
 		// po tockah zmnozi
-		dn3.Complex[] abFFT = new dn3.Complex[n];
+		Complex[] abFFT = new Complex[n];
 		for (int i = 0; i < n; i++) {
 			abFFT[i] = aFFT[i].times(bFFT[i]);
 		}
 		// odtransformiraj
-		double[] ab = dn3.Complex.toDouble(FFT.fft(abFFT, true));
+		double[] ab = Complex.toDouble(FFT.fft(abFFT, true));
 		return Arrays.copyOf(ab, stA + stB + 1);
 	}
 	
